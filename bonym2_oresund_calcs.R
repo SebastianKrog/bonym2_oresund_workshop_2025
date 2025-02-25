@@ -150,6 +150,8 @@ ggplot(plot_data, aes(x = dose, y = tcp)) +
 # Sample size calculations
 # ----------------------------------------
 
+# (Cut from the presentation because of time)
+
 alpha <- 0.05 # Assuming a two-sided endpoint
 sig_level <- alpha # It's the same thing
 power <- 0.8 # For a phase 3 trial a power of 0.9 should be considered
@@ -472,4 +474,11 @@ binom.test(sum(filter(sim, h0==F)$p_logrank <= 0.05), length(filter(sim, h0==F)$
 sim_plot <- sim |> mutate(p05 = p_cph >= 0.05)
 
 # Volcanoplot
-ggplot(data=filter(sim), aes(x=log10(hr), y=-log10(p_cph), color=h0)) + geom_point()
+ggplot(data=filter(sim, h0 == F) |> mutate(p05 = p_cph < 0.05)) +
+  geom_point(alpha=0.5, aes(x=log10(hr), y=-log10(p_cph), 
+                 color=p05
+                 )) + scale_color_manual(values=c("black", "purple"), guide="none") +
+  ggtitle("Volcanoplot of 1000 trials") +
+  theme(plot.title = element_text(size=18))
+
+  
